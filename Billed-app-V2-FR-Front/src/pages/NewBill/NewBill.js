@@ -32,6 +32,13 @@ const handleChangeFile = (e, { store, localStorage }) => {
   const filePath = e.target.value.split(/\\/g)
   const fileName = filePath[filePath.length - 1]
 
+  const extension = fileName.split('.').pop().toLowerCase()
+  if (!['jpg', 'jpeg', 'png'].includes(extension)) {
+    alert('Format de fichier invalide')
+    e.target.value = ''
+    return
+  }
+
   const formData = new FormData()
   const email = JSON.parse(localStorage.getItem("user")).email
   formData.append('file', file)
