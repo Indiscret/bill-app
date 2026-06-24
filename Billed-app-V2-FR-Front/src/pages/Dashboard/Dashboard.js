@@ -246,36 +246,34 @@ export const handleRefuseSubmit = (e, bill, document) => {
  * Exported for testing purposes
  */
 export const handleShowTickets = (e, bills, index, document) => {
-  if (dashboardState.counter === undefined || dashboardState.index !== index) {
-    dashboardState.counter = 0
-  }
-  if (dashboardState.index === undefined || dashboardState.index !== index) {
-    dashboardState.index = index
-  }
+  const container = document.querySelector(`#status-bills-container${index}`)
+  const arrow = document.querySelector(`#arrow-icon${index}`)
 
-  if (dashboardState.counter % 2 === 0) {
-    const arrow = document.querySelector(`#arrow-icon${dashboardState.index}`)
-    if (arrow) arrow.style.transform = 'rotate(0deg)'
+  const isOpen = container.dataset.open === "true"
 
-    document.querySelector(`#status-bills-container${dashboardState.index}`)
-      .innerHTML = cards(filteredBills(bills, getStatus(dashboardState.index)))
+  const filtered = filteredBills(bills, getStatus(index))
 
-    dashboardState.counter++
+  if (!isOpen) {
+    container.dataset.open = "true"
+
+    arrow.style.transform = "rotate(0deg)"
+    container.innerHTML = cards(filtered)
+
+    filtered.forEach(bill => {
+      const openBill = document.querySelector(`#open-bill${bill.id}`)
+      if (openBill) {
+        openBill.addEventListener("click", (e) =>
+          handleEditTicket(e, bill, bills, document)
+        )
+      }
+    })
+
   } else {
-    const arrow = document.querySelector(`#arrow-icon${dashboardState.index}`)
-    if (arrow) arrow.style.transform = 'rotate(90deg)'
+    container.dataset.open = "false"
 
-    document.querySelector(`#status-bills-container${dashboardState.index}`)
-      .innerHTML = ""
-
-    dashboardState.counter++
+    arrow.style.transform = "rotate(90deg)"
+    container.innerHTML = ""
   }
-
-  bills.forEach(bill => {
-    const openBill = document.querySelector(`#open-bill${bill.id}`)
-    if (openBill) openBill.addEventListener('click', (e) =>
-      handleEditTicket(e, bill, bills, document))
-  })
 
   return bills
 }
